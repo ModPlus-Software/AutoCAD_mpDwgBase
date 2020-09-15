@@ -186,8 +186,8 @@
             var ed = doc.Editor;
             try
             {
-                var peo = new PromptEntityOptions("\n" + ModPlusAPI.Language.GetItem(LangItem, "msg34") + ":");
-                peo.SetRejectMessage("\n" + ModPlusAPI.Language.GetItem(LangItem, "wrong"));
+                var peo = new PromptEntityOptions($"\n{ModPlusAPI.Language.GetItem(LangItem, "msg34")}:");
+                peo.SetRejectMessage($"\n{ModPlusAPI.Language.GetItem(LangItem, "wrong")}");
                 peo.AllowNone = true;
                 peo.AllowObjectOnLockedLayer = true;
                 peo.AddAllowedClass(typeof(BlockReference), true);
@@ -274,7 +274,7 @@
 
             #region Проверяем по базе плагина
 
-            if (DwgBaseHelpers.DeseializeFromXml(_mpDwgBaseFile, out var mpDwgBaseItems))
+            if (DwgBaseHelpers.DeserializeFromXml(_mpDwgBaseFile, out var mpDwgBaseItems))
             {
                 foreach (var mpDwgBaseItem in mpDwgBaseItems)
                 {
@@ -282,7 +282,8 @@
                     {
                         if (mpDwgBaseItem.Name.Equals(Item.Name))
                         {
-                            ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg35") + ": " + Item.Name);
+                            ModPlusAPI.Windows.MessageBox.Show(
+                                $"{ModPlusAPI.Language.GetItem(LangItem, "msg35")}: {Item.Name}");
                             hasSame = true;
                         }
                     }
@@ -297,7 +298,7 @@
 
             #region Проверяем по базе пользователя
 
-            if (DwgBaseHelpers.DeseializeFromXml(_userDwgBaseFile, out var userDwgBaseItems))
+            if (DwgBaseHelpers.DeserializeFromXml(_userDwgBaseFile, out var userDwgBaseItems))
             {
                 foreach (var userDwgBaseItem in userDwgBaseItems)
                 {
@@ -305,7 +306,8 @@
                     {
                         if (userDwgBaseItem.Name.Equals(Item.Name))
                         {
-                            ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg37") + ": " + Item.Name);
+                            ModPlusAPI.Windows.MessageBox.Show(
+                                $"{ModPlusAPI.Language.GetItem(LangItem, "msg37")}: {Item.Name}");
                             hasSame = true;
                         }
                     }
@@ -350,10 +352,7 @@
                         if (File.Exists(db.Filename))
                         {
                             ModPlusAPI.Windows.MessageBox.Show(
-                                ModPlusAPI.Language.GetItem(LangItem, "msg41") + Environment.NewLine +
-                                ModPlusAPI.Language.GetItem(LangItem, "msg42") + " - " + _dwgBaseFolder + Environment.NewLine +
-                                ModPlusAPI.Language.GetItem(LangItem, "msg43") + " - " + fi.DirectoryName +
-                                Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
+                                $"{ModPlusAPI.Language.GetItem(LangItem, "msg41")}{Environment.NewLine}{ModPlusAPI.Language.GetItem(LangItem, "msg42")} - {_dwgBaseFolder}{Environment.NewLine}{ModPlusAPI.Language.GetItem(LangItem, "msg43")} - {fi.DirectoryName}{Environment.NewLine}{ModPlusAPI.Language.GetItem(LangItem, "msg44")}"
                             );
                         }
                         else
@@ -459,7 +458,7 @@
                 {
                     using (var destDb = new Database(false, true))
                     {
-                        destDb.ReadDwgFile(file, FileShare.ReadWrite, true, string.Empty);
+                        destDb.ReadDwgFile(file, FileOpenMode.OpenForReadAndWriteNoShare, true, string.Empty);
 
                         // Create a variable to store the list of block identifiers
                         var blockIds = new ObjectIdCollection { _selectedBlockObjectId };
@@ -532,8 +531,7 @@
         {
             var uri =
                 new Uri(
-                    "pack://application:,,,/mpDwgBase_" + ModPlusConnector.Instance.AvailProductExternalVersion +
-                    ";component/Resources/helpImages/helpImage_1.png",
+                    $"pack://application:,,,/mpDwgBase_{ModPlusConnector.Instance.AvailProductExternalVersion};component/Resources/helpImages/helpImage_1.png",
                     UriKind.RelativeOrAbsolute);
             helpImage_1.Source = BitmapFrame.Create(uri);
         }
@@ -560,7 +558,7 @@
                         var selectedFile = ofd.Filename;
                         if (selectedFile.Contains(_dwgBaseFolder))
                         {
-                            if (DwgBaseHelpers.Is2010DwgVersion(selectedFile))
+                            if (DwgBaseHelpers.Is2013DwgVersion(selectedFile))
                             {
                                 TbSourceFile.Text = DwgBaseHelpers.TrimStart(selectedFile, _dwgBaseFolder).TrimStart('\\');
                                 needLoop = false;
@@ -572,7 +570,8 @@
                         }
                         else
                         {
-                            ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg49") + " " + _dwgBaseFolder);
+                            ModPlusAPI.Windows.MessageBox.Show(
+                                $"{ModPlusAPI.Language.GetItem(LangItem, "msg49")} {_dwgBaseFolder}");
                         }
                     }
                     else if (ofdresult == System.Windows.Forms.DialogResult.Cancel)
@@ -638,14 +637,13 @@
                             else
                             {
                                 ModPlusAPI.Windows.MessageBox.Show(
-                                    ModPlusAPI.Language.GetItem(LangItem, "msg51") + " " + _dwgBaseFolder +
-                                    Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg52"));
+                                    $"{ModPlusAPI.Language.GetItem(LangItem, "msg51")} {_dwgBaseFolder}{Environment.NewLine}{ModPlusAPI.Language.GetItem(LangItem, "msg52")}");
                             }
                         }
                         else
                         {
                             ModPlusAPI.Windows.MessageBox.Show(
-                                ModPlusAPI.Language.GetItem(LangItem, "msg49") + " " + _dwgBaseFolder);
+                                $"{ModPlusAPI.Language.GetItem(LangItem, "msg49")} {_dwgBaseFolder}");
                         }
                     }
                     else if (sfdresult == System.Windows.Forms.DialogResult.Cancel)
@@ -1023,10 +1021,7 @@
                     if (File.Exists(db.Filename))
                     {
                         ModPlusAPI.Windows.MessageBox.Show(
-                            ModPlusAPI.Language.GetItem(LangItem, "msg55") + Environment.NewLine +
-                            ModPlusAPI.Language.GetItem(LangItem, "msg42") + " - " + _dwgBaseFolder + Environment.NewLine +
-                            ModPlusAPI.Language.GetItem(LangItem, "msg43") + " - " + fi.DirectoryName +
-                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44"));
+                            $"{ModPlusAPI.Language.GetItem(LangItem, "msg55")}{Environment.NewLine}{ModPlusAPI.Language.GetItem(LangItem, "msg42")} - {_dwgBaseFolder}{Environment.NewLine}{ModPlusAPI.Language.GetItem(LangItem, "msg43")} - {fi.DirectoryName}{Environment.NewLine}{ModPlusAPI.Language.GetItem(LangItem, "msg44")}");
                     }
                     else
                     {

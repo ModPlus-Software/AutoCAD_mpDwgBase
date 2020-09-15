@@ -4,17 +4,19 @@
     using System.Collections.Generic;
     using System.Drawing;
     using System.IO;
-    using System.Net;
     using System.Windows.Media.Imaging;
-    using System.Xml;
     using System.Xml.Serialization;
     using Autodesk.AutoCAD.ApplicationServices;
     using Autodesk.AutoCAD.DatabaseServices;
     using Models;
+    using ModPlusAPI;
     using ModPlusAPI.Windows;
 
     public static class DwgBaseHelpers
     {
+        private const string LangItem = "mpDwgBase";
+        private static string _customBaseFolder;
+
         /// <summary>
         /// Сериализация списка элементов в xml
         /// </summary>
@@ -29,12 +31,12 @@
             }
         }
 
-        public static bool DeseializeFromXml(string fileName, out List<DwgBaseItem> listOfItems)
+        public static bool DeserializeFromXml(string fileName, out List<DwgBaseItem> listOfItems)
         {
             try
             {
                 var formatter = new XmlSerializer(typeof(List<DwgBaseItem>));
-                using (FileStream fs = new FileStream(fileName, FileMode.Open))
+                using (var fs = new FileStream(fileName, FileMode.Open))
                 {
                     listOfItems = formatter.Deserialize(fs) as List<DwgBaseItem>;
                     return true;
@@ -48,6 +50,32 @@
             }
         }
 
+        /// <summary>
+        /// Возвращает путь к папке пользовательской базы
+        /// </summary>
+        public static string GetCustomBaseFolder()
+        {
+            if (!string.IsNullOrEmpty(_customBaseFolder) && Directory.Exists(_customBaseFolder))
+                return _customBaseFolder;
+
+            _customBaseFolder = UserConfigFile.GetValue(LangItem, "CustomBaseFolder");
+            if (Directory.Exists(_customBaseFolder))
+                return _customBaseFolder;
+
+            _customBaseFolder = Constants.DwgBaseDirectory;
+            return _customBaseFolder;
+        }
+
+        /// <summary>
+        /// Сохраняет путь к папке пользовательской базы
+        /// </summary>
+        /// <param name="folder">Путь к папке пользовательской базы</param>
+        public static void SetCustomBaseFolder(string folder)
+        {
+            _customBaseFolder = folder;
+            UserConfigFile.SetValue(LangItem, "CustomBaseFolder", folder, true);
+        }
+
         public static string FindImageFile(DwgBaseItem selectedItem, string baseFolder)
         {
             var file = string.Empty;
@@ -55,7 +83,7 @@
 
             if (Directory.Exists(dwgFile.DirectoryName))
             {
-                file = Path.Combine(dwgFile.DirectoryName, dwgFile.Name + " icons", selectedItem.BlockName + ".bmp");
+                file = Path.Combine(dwgFile.DirectoryName, $"{dwgFile.Name} icons", $"{selectedItem.BlockName}.bmp");
                 if (File.Exists(file))
                 {
                     return file;
@@ -83,12 +111,12 @@
             }
         }
 
-        public static bool Is2010DwgVersion(string filename)
+        public static bool Is2013DwgVersion(string filename)
         {
             using (var reader = new StreamReader(filename))
             {
                 var readLine = reader.ReadLine();
-                return readLine != null && readLine.Substring(0, 6).Equals("AC1024");
+                return readLine != null && readLine.Substring(0, 6).Equals("AC1027");
             }
         }
 
@@ -111,17 +139,17 @@
             }
 
             var db = new Database(false, true);
-            db.ReadDwgFile(file, FileShare.Read, true, string.Empty);
+            db.ReadDwgFile(file, FileOpenMode.OpenForReadAndAllShare, true, string.Empty);
             using (var tr = db.TransactionManager.StartTransaction())
             {
-                var bt = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+                var bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
                 foreach (var objectId in bt)
                 {
-                    var btr = tr.GetObject(objectId, OpenMode.ForRead) as BlockTableRecord;
+                    var btr = (BlockTableRecord)tr.GetObject(objectId, OpenMode.ForRead);
                     foreach (var objId in btr)
                     {
                         var ent = tr.GetObject(objId, OpenMode.ForRead) as Entity;
-                        if (ent.IsAProxy)
+                        if (ent != null && ent.IsAProxy)
                         {
                             return true;
                         }
@@ -132,28 +160,6 @@
             return false;
         }
 
-        public static bool GetConfigFileFromSite(out XmlDocument xmlDocument)
-        {
-            xmlDocument = new XmlDocument();
-            try
-            {
-                const string url = "http://www.modplus.org/Downloads/ModPlus.xml";
-                string xmlStr;
-                using (var wc = new WebClient())
-                {
-                    xmlStr = wc.DownloadString(url);
-                }
-
-                xmlDocument.LoadXml(xmlStr);
-                return true;
-            }
-            catch (Exception exception)
-            {
-                ExceptionBox.Show(exception);
-                return false;
-            }
-        }
-
         public static string GetBlkNameForInsertDrawing(string blkName, Database db)
         {
             var returnedBlkName = blkName.Replace(".dwg", string.Empty);
@@ -162,7 +168,7 @@
                 var bt = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
                 while (bt != null && bt.Has(returnedBlkName))
                 {
-                    returnedBlkName = blkName + "_" + DateTime.Now.Second;
+                    returnedBlkName = $"{blkName}_{DateTime.Now.Second}";
                 }
             }
 

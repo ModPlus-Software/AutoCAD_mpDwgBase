@@ -33,7 +33,7 @@
             }
         }
 
-        private void MoveDwgBase()
+        private static void MoveDwgBase()
         {
             var d = Path.Combine(Constants.CurrentDirectory, "Data", "DwgBase");
             if (Directory.Exists(d))

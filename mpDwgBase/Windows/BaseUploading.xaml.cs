@@ -1,8 +1,4 @@
-﻿using System.Net.Mail;
-using System.Threading.Tasks;
-using ModPlusService.Dto;
-
-namespace mpDwgBase.Windows
+﻿namespace mpDwgBase.Windows
 {
     using System;
     using System.Collections.Generic;
@@ -11,13 +7,14 @@ namespace mpDwgBase.Windows
     using System.IO.Compression;
     using System.Linq;
     using System.Net;
+    using System.Net.Mail;
+    using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Threading;
-    using System.Xml;
     using Models;
-    using ModPlusAPI.Web.FTP;
     using ModPlusAPI.Windows;
+    using ModPlusService.Dto;
     using ModPlusStyle.Controls.Dialogs;
     using Utils;
     using MessageBox = ModPlusAPI.Windows.MessageBox;
@@ -70,7 +67,7 @@ namespace mpDwgBase.Windows
                         SourceFile = dwgBaseItem.SourceFile,
                         Selected = false,
                         FullDirectory = fi.DirectoryName,
-                        SubDirectory = fi.DirectoryName?.Replace(_dwgBaseFolder + @"\", string.Empty)
+                        SubDirectory = fi.DirectoryName?.Replace($@"{_dwgBaseFolder}\", string.Empty)
                     };
                     if (!HasFileToBindInList(fileToBind))
                     {
@@ -199,9 +196,9 @@ namespace mpDwgBase.Windows
             var baseFileToArchive = new List<DwgBaseItem>();
             for (var i = 0; i < _dwgBaseItems.Count; i++)
             {
-                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
-                    ModPlusAPI.Language.GetItem(LangItem, "msg17") + ": " + i + "/" + _dwgBaseItems.Count);
-                Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)i);
+                Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
+                    $"{ModPlusAPI.Language.GetItem(LangItem, "msg17")}: {i}/{_dwgBaseItems.Count}");
+                Dispatcher?.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)i);
                 var dwgBaseItem = _dwgBaseItems[i];
                 if (sourceFiles.Contains(dwgBaseItem.SourceFile))
                 {
@@ -276,8 +273,7 @@ namespace mpDwgBase.Windows
             catch
             {
                 MessageBox.Show(
-                   ModPlusAPI.Language.GetItem(LangItem, "msg20") + ": " + tmpFolder + Environment.NewLine +
-                   ModPlusAPI.Language.GetItem(LangItem, "msg21"));
+                    $"{ModPlusAPI.Language.GetItem(LangItem, "msg20")}: {tmpFolder}{Environment.NewLine}{ModPlusAPI.Language.GetItem(LangItem, "msg21")}");
             }
         }
 
@@ -334,9 +330,7 @@ namespace mpDwgBase.Windows
 
                     await this.ShowMessageAsync(
                         string.Empty,
-                        ModPlusAPI.Language.GetItem(LangItem, "msg27") + ": " + _currentFileToUpload + " " +
-                        ModPlusAPI.Language.GetItem(LangItem, "msg28") + Environment.NewLine +
-                        ModPlusAPI.Language.GetItem(LangItem, "msg29"));
+                        $"{ModPlusAPI.Language.GetItem(LangItem, "msg27")}: {_currentFileToUpload} {ModPlusAPI.Language.GetItem(LangItem, "msg28")}{Environment.NewLine}{ModPlusAPI.Language.GetItem(LangItem, "msg29")}");
                 }
                 catch (Exception exception)
                 {
@@ -358,7 +352,7 @@ namespace mpDwgBase.Windows
             if (!string.IsNullOrEmpty(TbComment.Text))
             {
                 file = Path.Combine(tmpFolder, "comment.txt");
-                var text = "Feedback :" + TbFeedback.Text + Environment.NewLine + TbComment.Text;
+                var text = $"Feedback :{TbFeedback.Text}{Environment.NewLine}{TbComment.Text}";
                 File.WriteAllText(file, text);
             }
 

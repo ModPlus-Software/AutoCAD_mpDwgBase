@@ -73,7 +73,7 @@
             var x = string.Empty;
             if (Parent != null)
             {
-                x += Parent.GetAncestry() + "/";
+                x += $"{Parent.GetAncestry()}/";
             }
 
             x += Name;

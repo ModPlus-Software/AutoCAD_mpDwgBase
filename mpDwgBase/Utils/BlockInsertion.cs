@@ -137,7 +137,7 @@
                 {
                     case 0:
                     {
-                        var jigOpts = new JigPromptPointOptions("\n" + Language.GetItem(LangItem, "msg13") + ":");
+                        var jigOpts = new JigPromptPointOptions($"\n{Language.GetItem(LangItem, "msg13")}:");
                         jigOpts.UserInputControls =
                             UserInputControls.Accept3dCoordinates |
                             UserInputControls.NoZeroResponseAccepted |
@@ -164,7 +164,7 @@
 
                     case 1:
                     {
-                        var jigOpts = new JigPromptAngleOptions("\n" + Language.GetItem(LangItem, "msg14") + ":");
+                        var jigOpts = new JigPromptAngleOptions($"\n{Language.GetItem(LangItem, "msg14")}:");
                         jigOpts.UserInputControls =
                             UserInputControls.Accept3dCoordinates |
                             UserInputControls.NoNegativeResponseAccepted |
@@ -176,20 +176,20 @@
                         var res = prompts.AcquireAngle(jigOpts);
                         var angleTemp = res.Value;
                         if (Math.Abs(angleTemp - _angle) > Tolerance.Global.EqualVector)
-                            {
-                                _angle = angleTemp;
-                            }
-                            else
-                            {
-                                return SamplerStatus.NoChange;
-                            }
+                        {
+                            _angle = angleTemp;
+                        }
+                        else
+                        {
+                            return SamplerStatus.NoChange;
+                        }
 
-                            if (res.Status == PromptStatus.Cancel)
-                            {
-                                return SamplerStatus.Cancel;
-                            }
+                        if (res.Status == PromptStatus.Cancel)
+                        {
+                            return SamplerStatus.Cancel;
+                        }
 
-                            return SamplerStatus.OK;
+                        return SamplerStatus.OK;
                     }
 
                     default:

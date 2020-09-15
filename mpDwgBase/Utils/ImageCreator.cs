@@ -43,11 +43,11 @@
             var sourceDb = new Database(false, true);
 
             // Read the DWG into a side database
-            sourceDb.ReadDwgFile(Path.Combine(baseFolder, selectedItem.SourceFile), FileShare.Read, true, string.Empty);
-            var dwgfile = new FileInfo(Path.Combine(baseFolder, selectedItem.SourceFile));
+            sourceDb.ReadDwgFile(Path.Combine(baseFolder, selectedItem.SourceFile), FileOpenMode.OpenForReadAndAllShare, true, string.Empty);
+            var dwgFile = new FileInfo(Path.Combine(baseFolder, selectedItem.SourceFile));
             
             // ReSharper disable once AssignNullToNotNullAttribute
-            var iconPath = Path.Combine(dwgfile.DirectoryName, dwgfile.Name + " icons");
+            var iconPath = Path.Combine(dwgFile.DirectoryName, $"{dwgFile.Name} icons");
             using (var tr = sourceDb.TransactionManager.StartTransaction())
             {
                 var bt = (BlockTable)tr.GetObject(sourceDb.BlockTableId, OpenMode.ForRead);
@@ -74,7 +74,7 @@
             var imgsrc = CMLContentSearchPreviews.GetBlockTRThumbnail(btr);
             var bmp = ImageSourceToGDI(imgsrc as System.Windows.Media.Imaging.BitmapSource);
 
-            var fname = iconPath + "\\" + btr.Name + ".bmp";
+            var fname = $"{iconPath}\\{btr.Name}.bmp";
 
             if (File.Exists(fname))
             {

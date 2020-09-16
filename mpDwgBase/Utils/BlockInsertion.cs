@@ -155,11 +155,11 @@
                         }
 
                         if (res.Status == PromptStatus.Cancel)
-                            {
-                                return SamplerStatus.Cancel;
-                            }
+                        {
+                            return SamplerStatus.Cancel;
+                        }
 
-                            return SamplerStatus.OK;
+                        return SamplerStatus.OK;
                     }
 
                     case 1:
@@ -204,7 +204,7 @@
                 {
                     var blockReference = (BlockReference)Entity;
                     blockReference.Normal = Vector3d.ZAxis;
-                    blockReference.Position = _position.TransformBy(_ed.CurrentUserCoordinateSystem);
+                    blockReference.Position = _position.TransformBy(_ed.CurrentUserCoordinateSystem.Inverse());
                     blockReference.Rotation = _angle;
                     blockReference.TransformBy(_ucs);
                     if (_attributeReferences != null)
@@ -239,9 +239,6 @@
         /// <summary>
         /// Добавление атрибутов для спецификации
         /// </summary>
-        /// <param name="tr"></param>
-        /// <param name="blkRef"></param>
-        /// <param name="dwgBaseItem"></param>
         public static void AddAttributesForSpecification(
             Transaction tr, BlockReference blkRef, DwgBaseItem dwgBaseItem)
         {
@@ -301,7 +298,7 @@
                 if (acBlkTblRec != null)
                 {
                     // blkName = acBlkTblRec.Name;
-                    var addAttrDefenitions = AddAttrDefenitions(acBlkTblRec, blkRef, tr);
+                    var addAttrDefenitions = AddAttrDefinitions(acBlkTblRec, blkRef, tr);
                     if (addAttrDefenitions.Any())
                     {
                         foreach (ObjectId id in blkRef.AttributeCollection)
@@ -348,9 +345,6 @@
         /// <summary>
         /// Проверка, что блок имеет атрибуты для заполнения спецификации
         /// </summary>
-        /// <param name="tr"></param>
-        /// <param name="objectId"></param>
-        /// <returns></returns>
         private static bool HasAttributesForSpecification(Transaction tr, ObjectId objectId)
         {
             var allowAttributesTags = new List<string> { "mp:position", "mp:designation", "mp:name", "mp:mass", "mp:note" };
@@ -380,7 +374,7 @@
         }
 
         // Add an attribute definition to the block
-        private static List<AttributeDefinition> AddAttrDefenitions(BlockTableRecord acBlkTblRec, BlockReference blkRef, Transaction tr)
+        private static List<AttributeDefinition> AddAttrDefinitions(BlockTableRecord acBlkTblRec, BlockReference blkRef, Transaction tr)
         {
             var attributeDefinitions = new List<AttributeDefinition>();
             var allowAttributesTags = new List<string> { "mp:position", "mp:designation", "mp:name", "mp:mass", "mp:note" };

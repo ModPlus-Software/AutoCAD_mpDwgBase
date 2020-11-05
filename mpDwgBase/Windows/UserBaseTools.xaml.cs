@@ -10,7 +10,6 @@
     using System.Windows.Input;
     using System.Windows.Threading;
     using Models;
-    using ModPlusAPI;
     using ModPlusAPI.Mvvm;
     using ModPlusAPI.Windows;
     using Utils;

@@ -17,7 +17,9 @@
         [CommandMethod("ModPlus", "mpDwgBase", CommandFlags.Session)]
         public void Start()
         {
-            Statistic.SendCommandStarting(new ModPlusConnector());
+#if !DEBUG
+            Statistic.SendCommandStarting(ModPlusConnector.Instance);
+#endif
             try
             {
                 MoveDwgBase();

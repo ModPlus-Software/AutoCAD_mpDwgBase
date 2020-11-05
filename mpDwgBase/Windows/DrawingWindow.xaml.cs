@@ -228,7 +228,7 @@
                             if (!selectedPath.Equals(_dwgBaseFolder))
                             {
                                 var fi = new FileInfo(selectedFile);
-                                copiedFile = System.IO.Path.Combine(selectedPath, fi.Name);
+                                copiedFile = Path.Combine(selectedPath, fi.Name);
                                 if (File.Exists(copiedFile))
                                 {
                                     needLoop =
@@ -507,7 +507,7 @@
 
         public bool CheckFileWithLastDataExists()
         {
-            var file = System.IO.Path.Combine(_dwgBaseFolder, "LastInteredUserDataForDrawing.xml");
+            var file = Path.Combine(_dwgBaseFolder, "LastInteredUserDataForDrawing.xml");
             return File.Exists(file);
         }
 
@@ -572,7 +572,7 @@
 
             // Source File
             // ReSharper disable once AssignNullToNotNullAttribute
-            var sf = System.IO.Path.Combine(_dwgBaseFolder, xEl.Attribute("SourceFile")?.Value);
+            var sf = Path.Combine(_dwgBaseFolder, xEl.Attribute("SourceFile")?.Value);
             if (!string.IsNullOrEmpty(sf) && File.Exists(sf))
             {
                 TbSourceFile.Text = xEl.Attribute("SourceFile")?.Value;
